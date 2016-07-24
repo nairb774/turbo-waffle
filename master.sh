@@ -11,6 +11,7 @@ FLANNEL_IPMASQ=true
 apt-get update
 apt-get install apt-transport-https ca-certificates
 apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+mkdir -p /etc/apt/sources.list.d
 echo 'deb https://apt.dockerproject.org/repo ubuntu-trusty main' > /etc/apt/sources.list.d/docker.list
 apt-get update
 apt-get -y install bridge-utils docker-engine
@@ -32,10 +33,8 @@ docker -H unix:///var/run/docker-bootstrap.sock run -d \
         --advertise-client-urls=http://${MASTER_IP}:4001 \
         --data-dir=/var/etcd/data
 
-until docker -H unix:///var/run/docker-bootstrap.sock run \
-    --net=host \
-    quay.io/coreos/etcd:${ETCD_VERSION} \
-    etcdctl set /coreos.com/network/config '{ "Network": "10.1.0.0/16" }'; do
+until curl http://127.0.0.1:4001/v2/keys/coreos.com/network/config -XPUT \
+    -d 'value={ "Network": "10.1.0.0/16" }'; do
   sleep 2
 done
 

@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 
 MASTER_IP="$(hostname --ip-address)"
-K8S_VERSION=1.3.0
+K8S_VERSION=1.3.3
 ETCD_VERSION=v2.3.7
 FLANNEL_VERSION=0.5.5
 FLANNEL_IFACE=eth0
